@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+#!/bin/bash
 PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
@@ -17,7 +18,7 @@ Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_p
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
 Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
-优化系统配置
+#优化系统配置
 optimizing_system(){
 	echo 'fs.file-max = 1024000' >> /etc/sysctl.conf
 	echo 'fs.inotify.max_user_instances = 8192' >> /etc/sysctl.conf
