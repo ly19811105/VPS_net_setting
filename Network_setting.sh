@@ -97,5 +97,3 @@ case "$num" in
 	;;
 esac
 }
-judge_mode
-list "$1"
