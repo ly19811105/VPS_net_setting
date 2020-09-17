@@ -23,7 +23,7 @@ Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
         find ./ -name "Network_setting.*" | xargs rm
 	start_menu
     fi
-start_menu	
+	
 #优化系统配置
 optimizing_system(){
 	echo 'fs.file-max = 1024000' >> /etc/sysctl.conf
@@ -167,3 +167,5 @@ case "$num" in
 	;;
 esac
 }
+judge_mode
+list "$1"
