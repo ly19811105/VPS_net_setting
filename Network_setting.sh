@@ -20,7 +20,7 @@ Error="${Red_font_prefix}[错误]${Font_color_suffix}"
 Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
  if [[ -f "./Network_setting.sh"]]; then
         echo "证书文件已存在"
-        rm -rf "$HOME/.acme.sh"
+        rm -rf "./Network_setting.sh"
 fi	
 #优化系统配置
 optimizing_system(){
