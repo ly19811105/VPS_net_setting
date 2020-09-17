@@ -18,6 +18,10 @@ Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_p
 Info="${Green_font_prefix}[信息]${Font_color_suffix}"
 Error="${Red_font_prefix}[错误]${Font_color_suffix}"
 Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
+ if [[ -f "./Network_setting.sh" || -f "./Network_setting.sh*" ]]; then
+        echo "证书文件已存在"
+        rm -rf "$HOME/.acme.sh"
+fi	
 #优化系统配置
 optimizing_system(){
 	echo 'fs.file-max = 1024000' >> /etc/sysctl.conf
