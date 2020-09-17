@@ -96,7 +96,7 @@ echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ve
   
  
 ————————————杂项管理————————————
- ${Green_font_prefix}1.${Font_color_suffix} 卸载全部加速
+ ${Green_font_prefix}1.${Font_color_suffix} 执行Net全部加速
  ${Green_font_prefix}2.${Font_color_suffix} 退出脚本
 ————————————————————————————————" && echo
 
