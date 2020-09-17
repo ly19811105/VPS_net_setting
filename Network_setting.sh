@@ -1,3 +1,74 @@
+#!/usr/bin/env bash
+#!/bin/bash
+PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
+export PATH
+
+#=================================================
+#	System Required: CentOS 6/7/8
+#	Description: Network setting
+#	Version: 0.001
+#	Author: LY
+#	更新内容及反馈: 
+#=================================================
+
+sh_ver="1.3.2.44"
+github="github"
+
+Green_font_prefix="\033[32m" && Red_font_prefix="\033[31m" && Green_background_prefix="\033[42;37m" && Red_background_prefix="\033[41;37m" && Font_color_suffix="\033[0m"
+Info="${Green_font_prefix}[信息]${Font_color_suffix}"
+Error="${Red_font_prefix}[错误]${Font_color_suffix}"
+Tip="${Green_font_prefix}[注意]${Font_color_suffix}"
+    if [[ -e "./Network_setting.sh.1" ]]; then
+        echo "证书文件已存在"
+        find ./ -name "Network_setting.*" | xargs rm
+    fi	
+#优化系统配置
+optimizing_system(){
+	echo 'fs.file-max = 1024000' >> /etc/sysctl.conf
+	echo 'fs.inotify.max_user_instances = 8192' >> /etc/sysctl.conf
+	echo 'net.core.netdev_max_backlog = 262144' >> /etc/sysctl.conf
+	echo 'net.core.rmem_default = 8388608' >> /etc/sysctl.conf
+	echo 'net.core.rmem_max = 67108864' >> /etc/sysctl.conf
+	echo 'net.core.somaxconn = 65535' >> /etc/sysctl.conf
+	echo 'net.core.wmem_default = 8388608' >> /etc/sysctl.conf
+	echo 'net.core.wmem_max = 67108864' >> /etc/sysctl.conf
+	echo 'net.ipv4.ip_forward = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.ip_local_port_range = 10240 65000' >> /etc/sysctl.conf
+	echo 'net.ipv4.route.gc_timeout = 100' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_fastopen = 3' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_fin_timeout = 30' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_keepalive_time = 1200' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_max_orphans = 3276800' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_max_syn_backlog = 65536' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_max_tw_buckets = 60000' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_mem = 94500000 915000000 927000000' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_mtu_probing = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_rmem = 4096 87380 67108864' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_sack = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_syn_retries = 2' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_synack_retries = 2' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_syncookies = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_timestamps = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_tw_reuse = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_window_scaling = 1' >> /etc/sysctl.conf
+	echo 'net.ipv4.tcp_wmem = 4096 65536 67108864' >> /etc/sysctl.conf
+	echo 'net.netfilter.nf_conntrack_max = 6553500' >> /etc/sysctl.conf
+	echo 'net.netfilter.nf_conntrack_tcp_timeout_close_wait = 60' >> /etc/sysctl.conf
+	echo 'net.netfilter.nf_conntrack_tcp_timeout_established = 3600' >> /etc/sysctl.conf
+	echo 'net.netfilter.nf_conntrack_tcp_timeout_fin_wait = 120' >> /etc/sysctl.conf
+	echo 'net.netfilter.nf_conntrack_tcp_timeout_time_wait = 120' >> /etc/sysctl.conf
+	echo 'net.nf_conntrack_max = 6553500' >> /etc/sysctl.conf
+	sysctl -p
+	echo "*               soft    nofile           1000000
+*               hard    nofile          1000000">/etc/security/limits.conf
+	echo "ulimit -SHn 1000000">>/etc/profile
+	read -p "需要重启VPS后，才能生效系统优化配置，是否现在重启 ? [Y/n] :" yn
+	[ -z "${yn}" ] && yn="y"
+	if [[ $yn == [Yy] ]]; then
+		echo -e "${Info} VPS 重启中..."
+		reboot
+	fi
+}
 list() {
     case $1 in
     tls_modify)
@@ -13,121 +84,97 @@ list() {
         bbr_boost_sh
         ;;
     *)
-        menu
+        start_menu
         ;;
     esac
 }
+#开始菜单
+start_menu(){
+clear
+echo && echo -e " TCP加速 一键安装管理脚本 ${Red_font_prefix}[v${sh_ver}]${Font_color_suffix}
+ 更新内容及反馈:  https://blog.ylx.me/archives/783.html 运行./tcp.sh再次调用本脚本 母鸡慎用
+  
+ 
+————————————杂项管理————————————
+ ${Green_font_prefix}1.${Font_color_suffix} 卸载全部加速
+ ${Green_font_prefix}2.${Font_color_suffix} 退出脚本
+————————————————————————————————" && echo
 
-menu() {
-    update_sh
-    echo -e "\t V2ray 安装管理脚本 ${Red}[${shell_version}]${Font}"
-    echo -e "\t---authored by ly19811105---"
-    echo -e "\thttps://github.com/ly19811105\n"
-    echo -e "当前已安装版本:${shell_mode}\n"
-
-    echo -e "—————————————— 安装向导 ——————————————"""
-    echo -e "${Green}0.${Font}  升级 脚本"
-    echo -e "${Green}1.${Font}  安装 V2Ray (Nginx+ws+tls)"
-    echo -e "${Green}2.${Font}  安装 V2Ray (http/2)"
-    echo -e "${Green}3.${Font}  升级 V2Ray core"
-    echo -e "—————————————— 配置变更 ——————————————"
-    echo -e "${Green}4.${Font}  变更 UUID"
-    echo -e "${Green}5.${Font}  变更 alterid"
-    echo -e "${Green}6.${Font}  变更 port"
-    echo -e "${Green}7.${Font}  变更 TLS 版本(仅ws+tls有效)"
-    echo -e "—————————————— 查看信息 ——————————————"
-    echo -e "${Green}8.${Font}  查看 实时访问日志"
-    echo -e "${Green}9.${Font}  查看 实时错误日志"
-    echo -e "${Green}10.${Font} 查看 V2Ray 配置信息"
-    echo -e "—————————————— 其他选项 ——————————————"
-    echo -e "${Green}11.${Font} 安装 4合1 bbr 锐速安装脚本"
-    echo -e "${Green}12.${Font} 安装 MTproxy(支持TLS混淆)"
-    echo -e "${Green}13.${Font} 证书 有效期更新"
-    echo -e "${Green}14.${Font} 卸载 V2Ray"
-    echo -e "${Green}15.${Font} 更新 证书crontab计划任务"
-    echo -e "${Green}16.${Font} 清空 证书遗留文件"
-    echo -e "${Green}17.${Font} 退出 \n"
-
-    read -rp "请输入数字：" menu_num
-    case $menu_num in
-    0)
-        update_sh
-        ;;
-    1)
-        shell_mode="ws"
-        install_v2ray_ws_tls
-        ;;
-    2)
-        shell_mode="h2"
-        install_v2_h2
-        ;;
-    3)
-        bash <(curl -L -s https://raw.githubusercontent.com/ly19811105/V2Ray_ws-tls_bash_onekey/${github_branch}/v2ray.sh)
-        ;;
-    4)
-        read -rp "请输入UUID:" UUID
-        modify_UUID
-        start_process_systemd
-        ;;
-    5)
-        read -rp "请输入alterID:" alterID
-        modify_alterid
-        start_process_systemd
-        ;;
-    6)
-        read -rp "请输入连接端口:" port
-        if grep -q "ws" $v2ray_qr_config_file; then
-            modify_nginx_port
-        elif grep -q "h2" $v2ray_qr_config_file; then
-            modify_inbound_port
-        fi
-        start_process_systemd
-        ;;
-    7)
-        tls_type
-        ;;
-    8)
-        show_access_log
-        ;;
-    9)
-        show_error_log
-        ;;
-    10)
-        basic_information
-        if [[ $shell_mode == "ws" ]]; then
-            vmess_link_image_choice
-        else
-            vmess_qr_link_image
-        fi
-        show_information
-        ;;
-    11)
-        bbr_boost_sh
-        ;;
-    12)
-        mtproxy_sh
-        ;;
-    13)
-        stop_process_systemd
-        ssl_update_manuel
-        start_process_systemd
-        ;;
-    14)
-        uninstall_all
-        ;;
-    15)
-        acme_cron_update
-        ;;
-    16)
-        delete_tls_key_and_crt
-        ;;
-    17)
-        exit 0
-        ;;
-    *)
-        echo -e "${RedBG}请输入正确的数字${Font}"
-        ;;
-    esac
+	
+	echo -e " 当前拥塞控制算法为: ${Green_font_prefix}${net_congestion_control}${Font_color_suffix} 当前队列算法为: ${Green_font_prefix}${net_qdisc}${Font_color_suffix} "
+	
+echo
+read -p " 请输入数字 :" num
+case "$num" in
+	0)
+	Update_Shell
+	;;
+	1)
+	optimizing_system
+	;;
+	2)
+	exit 1
+	;;
+	3)
+	check_sys_Lotsever
+	;;
+	4)
+	check_sys_xanmod
+	;;
+	5)
+	check_sys_bbr2
+	;;
+	6)
+	check_sys_zen
+	;;
+	7)
+	check_sys_bbrplusnew	
+	;;
+	8)
+	gototeddysun_bbr
+	;;
+	9)
+	gototcpx	
+	;;
+	11)
+	startbbrfq
+	;;
+	12)
+	startbbrcake
+	;;
+	13)
+	startbbrplus
+	;;
+	14)
+	startlotserver
+	;;
+	15)
+	startbbr2fq
+	;;
+	16)
+	startbbr2cake
+	;;
+	17)
+	startbbr2fqecn
+	;;
+	18)
+	startbbr2cakeecn
+	;;
+	21)
+	remove_all
+	;;
+	22)
+	optimizing_system
+	;;
+	23)
+	exit 1
+	;;
+	*)
+	clear
+	echo -e "${Error}:请输入正确数字 [0-23]"
+	sleep 5s
+	start_menu
+	;;
+esac
 }
-
 list "$1"
